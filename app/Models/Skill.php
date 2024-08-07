@@ -11,14 +11,10 @@ class Skill extends Model
 
     protected $fillable =[
         'student_id',
-        'achievement_name',
-        'achievement_type',
-        'achievement_level',
-        'achievement_year',
-        'description'
+        'skill'
     ];
 
     public function Student() {
-        return $this->belongsTo(Skill::class, 'student_id', 'id');
+        return $this->belongsTo(Student::class, 'student_id', 'id');
     }
 }

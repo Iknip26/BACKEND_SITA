@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer("semester");
             $table->year("year");
-            $table->enum("status",["start","end"]);
+            $table->enum("status",["inProgress","ended"]);
             $table->date("start_date");
             $table->date("end_date");
             $table->timestamps();

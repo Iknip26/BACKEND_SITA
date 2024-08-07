@@ -22,9 +22,10 @@ return new class extends Migration
             $table->string("tools");
             $table->string("instance");
             $table->enum("status",["bimbingan","revisi","proses"]);
-            $table->enum("isApproved",["Approved","Not Approved", "Not yet Approved"]);
+            $table->enum("Approval",["Approved","Not Approved", "Not yet Approved"]);
             $table->timestamps();
             $table->foreign("lecturer_id")->references('id')->on('lecturers');
+
         });
     }
 
