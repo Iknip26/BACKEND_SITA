@@ -41,8 +41,6 @@ Route::apiResource('/period',PeriodController::class);
 Route::middleware(['auth:sanctum'])->group( function () {
     Route::get('/user', [AuthController::class, 'currentUser']);
     Route::apiResource('/skill', SkillController::class);
-    // Tambahkan rute custom di luar apiResource
-    Route::delete('/skill/deleteByIdUser/', [SkillController::class, 'destroyByIdUser'])->name('skill.deleteByIdUser');
     Route::put('/skill/updateSkill/{id}', [SkillController::class, 'updateSkill'])->name('skill.updateSkill');
 
     Route::apiResource('/counseling',CounselingController::class);

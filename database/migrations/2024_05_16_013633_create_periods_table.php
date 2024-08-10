@@ -10,10 +10,10 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
+{
         Schema::create('periods', function (Blueprint $table) {
             $table->id();
-            $table->integer("semester");
+            $table->string("semester");
             $table->year("year");
             $table->enum("status",["inProgress","ended"]);
             $table->date("start_date");

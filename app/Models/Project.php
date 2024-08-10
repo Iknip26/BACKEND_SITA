@@ -17,7 +17,8 @@ class Project extends Model
         "tools",
         "status",
         "Approval",
-        'instance'
+        'instance',
+        'year'
     ];
 
     public function counseling() {

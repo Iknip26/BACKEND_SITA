@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string("instance");
             $table->enum("status",["bimbingan","revisi","proses"]);
             $table->enum("Approval",["Approved","Not Approved", "Not yet Approved"]);
+            $table->string("year");
             $table->timestamps();
             $table->foreign("lecturer_id")->references('id')->on('lecturers');
 

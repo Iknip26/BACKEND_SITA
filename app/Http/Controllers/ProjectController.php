@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use App\Http\Resources\ProjectResource;
+use App\Models\Period;
 
 class ProjectController extends Controller
 {
@@ -61,6 +62,12 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         try {
+            $activePeriod = Period::where('status', 'inProgress')->first();
+
+            if (!$activePeriod) {
+                return response()->json(['error' => 'No active period found'], 400);
+            }
+
             $request->validate([
                 'lecturer_id' => 'required|exists:lecturers,id',
                 'title' => 'required',
@@ -72,7 +79,10 @@ class ProjectController extends Controller
                 'Approval' => 'required|in:Approved,Not Approved,Not yet Approved',
             ]);
 
-            $project = Project::create($request->all());
+            $data = $request->all();
+            $data['year'] = $activePeriod->year;
+
+            $project = Project::create($data);
 
             return response()->json(['message' => "project successfully created",
                 'data' => new ProjectResource($project

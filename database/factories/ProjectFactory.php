@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Lecturer;
+use App\Models\Period;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,6 +19,7 @@ class ProjectFactory extends Factory
     public function definition(): array
     {
         $lecturerIds = Lecturer::pluck('id')->toArray();
+        $year = Period::pluck('year')->toArray();
 
         return [
             'lecturer_id' => $this->faker->randomElement($lecturerIds),
@@ -26,6 +28,7 @@ class ProjectFactory extends Factory
             'description' => $this->faker->paragraph,
             'tools' => $this->faker->word,
             'instance' => $this->faker->word,
+            'year' => $this->faker->randomElement($year),
             'status' => $this->faker->randomElement(['bimbingan', 'revisi', 'proses']),
             'Approval' => $this->faker->randomElement(['Approved', 'Not Approved', 'Not yet Approved']),
             'created_at' => now(),

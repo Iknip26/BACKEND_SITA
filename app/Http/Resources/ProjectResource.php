@@ -25,7 +25,9 @@ class ProjectResource extends JsonResource
             "status" => $this->status,
             "Approval" => $this->Approval,
             'instance' => $this->instance,
-            "lecturer" => new LecturerResource($this->whenLoaded('lecturer'))
+            "year" => $this->year,
+            "lecturer" => new LecturerResource($this->whenLoaded('lecturer')),
+
         ];
     }
 }
