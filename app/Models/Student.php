@@ -22,7 +22,8 @@ class Student extends Model
         "link_linkedin",
         'judul',
         'sidang',
-        'yudisium'
+        'yudisium',
+        'skills'
     ];
 
     public function user(){
@@ -37,9 +38,15 @@ class Student extends Model
         return $this->hasMany(Counseling::class, 'student_id', 'id');
 
     }
-    public function skill() {
+    public function skills() {
 
         return $this->hasMany(Skill::class, 'student_id', 'id');
+
+    }
+
+    public function achievements() {
+
+        return $this->hasMany(Achievement::class, 'student_id', 'id');
 
     }
 

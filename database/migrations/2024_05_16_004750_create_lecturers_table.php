@@ -15,11 +15,13 @@ return new class extends Migration
         Schema::create('lecturers', function (Blueprint $table) {
             $table->id();
             $table->foreignId("user_id");
-            $table->string("front_title");
-            $table->string("back_title");
+            $table->string("front_title")->nullable();
+            $table->string("back_title")->nullable();
             $table->string("NID");
+            $table->string("photo_profile")->nullable();
             $table->integer("max_quota");
             $table->string("phone_number");
+            $table->boolean("isKaprodi");
             $table->timestamps();
             $table->foreign("user_id")->references('id')->on('users');
         });

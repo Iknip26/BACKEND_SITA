@@ -16,7 +16,7 @@ class Project extends Model
         "description",
         "tools",
         "status",
-        "isApproved",
+        "Approval",
         'instance'
     ];
 

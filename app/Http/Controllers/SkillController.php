@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\SkillResource;
 use App\Models\Skill;
 use App\Models\Student;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
@@ -14,10 +16,15 @@ class SkillController extends Controller
     {
         try {
             $user = Auth::user();
+            // $skill = skill::where('student_id',$user->id)->get();
+            // // dd($skill);
+            // return response()->json([
+            //     'message'=>'data retrieved successfully',
+            //     'data' => SkillResource::collection($skill)
+            // ],200);
             $student = Student::where('user_id',$user->id)->first();
-            $skill = Skill::where('student_id', $student->id)->get();
-            // dd($skill);
-            return response()->json(['data' => $skill]);
+
+            dd($student);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -26,38 +33,51 @@ class SkillController extends Controller
     public function show($id)
     {
         try {
-            $skill = Skill::with('student.user')->findOrFail($id,'id');
-            return response()->json(['data' => $skill]);
+            $skill = Skill::where('id', $id)->firstOrFail();
+            $student_id = Auth::user()->id;
+
+            if ($student_id != $skill->student_id) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+
+            return response()->json(['data' => new SkillResource($skill)]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Skill not found'], 404);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 404);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 
     public function store(Request $request)
     {
         try {
             $user = Auth::user();
-            $student = Student::where('user_id',$user->id)->first();
-            // dd($student->id);
+            $student = Student::where('user_id', $user->id)->first();
+
             $request->validate([
-                'achievement_name' => 'required',
-                'achievement_type' => 'required',
-                'achievement_level' => 'required',
-                'achievement_year' => 'required',
-                'description' => '',
+                'skill' => 'required|string',
             ]);
-            $data = $request->all();
-            $data['student_id'] = $student->id;
 
-            $skill = Skill::create($data);
+            // Convert the input skill string into an array
+            $skillsArray = explode(',', $request->skill);
 
-            return response()->json(['data' => $skill], 201);
+            // Save the skills as a comma-separated string
+            $student->skills = implode(',', array_map('trim', $skillsArray));
+            $student->save();
+
+            return response()->json([
+                'message' => "Data retrieved successfully",
+                'user' => $user->first_name . " " . $user->last_name,
+                'data' => $skillsArray
+            ], 201);
         } catch (QueryException $e) {
             return response()->json(['error' => 'Database error: ' . $e->getMessage()], 500);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
+
 
     public function update(Request $request, $id)
     {
@@ -66,20 +86,13 @@ class SkillController extends Controller
             $student = Student::where('user_id',$user->id)->first();
 
             $request->validate([
-                'achievement_name' => 'required',
-                'achievement_type' => 'required',
-                'achievement_level' => 'required',
-                'achievement_year' => 'required',
-                'description' => '',
+                'skill' => 'required',
             ]);
 
-            $skill = Skill::findOrFail($id);
-            $data = $request->all();
-            $data['student_id'] = $student->id;
+            $data = $request->skill;
+            dd($data);
 
-            $skill->update($data);
-
-            return response()->json(['data' => $skill], 200);
+            return response()->json(['data' => ""], 200);
         } catch (QueryException $e) {
             return response()->json(['error' => 'Database error: ' . $e->getMessage()], 500);
         } catch (\Exception $e) {
@@ -90,8 +103,6 @@ class SkillController extends Controller
     public function destroy($id)
     {
         try {
-            // $id_user = $request->input('id_user');
-            // dd($id_user);
             $rowsDeleted = Skill::where('student_id', $id)->delete();
 
             return response()->json([
@@ -126,20 +137,4 @@ class SkillController extends Controller
         }
     }
 
-    public function updateSkill(Request $request, $id){
-        // dd("kena");
-        try {
-
-            $student = Student::findOrFail($id);
-            $student->update([
-                'skill' => $request->input('skill')
-            ]);
-
-            return response()->json(['data' => $request->input('skill'), 'message'=>"data berhasil di ubah"], 200);
-        } catch (QueryException $e) {
-            return response()->json(['error' => 'Database error: ' . $e->getMessage()], 500);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
-        }
-    }
 }

@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\Api\AnnouncementController as ApiAnnouncementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CounselingController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\LecturerController;
+use App\Http\Controllers\PdfParserController;
 use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SkillController;
@@ -29,7 +31,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register',[AuthController::class,'register']);
 Route::post('/login',[AuthController::class,'login']);
 Route::apiResource('/student',StudentController::class);
-Route::get('/student/udpateSkill/', [DosenPageController::class,  'dashboard'])->name('dosen.dashboard');
+// Route::get('/student/udpateSkill/', [DosenPageController::class,  'dashboard'])->name('dosen.dashboard');
 
 Route::apiResource('/lecturer',LecturerController::class);
 Route::apiResource('/project',ProjectController::class);
@@ -45,7 +47,7 @@ Route::middleware(['auth:sanctum'])->group( function () {
 
     Route::apiResource('/counseling',CounselingController::class);
     Route::apiResource('/experience',ExperienceController::class);
-    Route::apiResource('/announcement',AnnouncementController::class);
+
     Route::post('/logout',[AuthController::class,'logout']);
 });
 
@@ -53,3 +55,6 @@ Route::post('/email/verification-link', [EmailVerificationController::class, 'ge
 Route::get('verify-email/{id}/{hash}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
 Route::post('/email/verification-notification', [EmailVerificationController::class, 'sendVerificationEmail']);
 Route::get('/download/{filename}',[FileController::class,'download']);
+Route::apiResource('/announcement',AnnouncementController::class);
+Route::get('/annoucementFile/{path}',[FileController::class,'showAttachment']);
+Route::post('/parse-pdf', [PdfParserController::class, 'parse']);

@@ -20,10 +20,11 @@ return new class extends Migration
             $table->foreignId("student_id");
             $table->foreignId("lecturer_id");
             $table->foreignId("project_id");
-            $table->date("tanggal");
-            $table->string("subjek");
-            $table->string("catatan_dosen")->nullable();
+            $table->date("date")->default(today());
+            $table->string("subject");
+            $table->string("lecturer_note")->nullable();
             $table->string("file")->nullable();
+            $table->string("status");
             $table->string("progress");
             $table->timestamps();
             $table->foreign("student_id")->references('id')->on('students');

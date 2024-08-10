@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ExperienceResource;
 use App\Models\Experience;
 use App\Models\Student;
 use Illuminate\Http\Request;
@@ -16,8 +17,12 @@ class ExperienceController extends Controller
             $user = Auth::user();
             $student = Student::where('user_id',$user->id)->first();
             $experiences = Experience::where('student_id',$student->id)->with('student.user')->get();
-            // dd($experiences);
-            return response()->json(['data' => $experiences],200);
+            $responseData = ExperienceResource::collection($experiences)->response()->getData(true);
+
+            return response()->json([
+                'message' => "data retrieved successfully",
+                'data' => $responseData['data'], // The actual data
+            ], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -29,7 +34,14 @@ class ExperienceController extends Controller
             $user = Auth::user();
             $student = Student::where('user_id',$user->id)->first();
             $experience = Experience::with('student.user')->findOrFail($id);
-            return response()->json(['data' => $experience]);
+            if($experience->student_id != $student->id){
+                return response()->json([
+                    'message' => "unauthorized",
+                ],401);
+            }
+            return response()->json([
+                'message' => "data retrieved successfully",
+                'data' => new ExperienceResource($experience)],200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 404);
         }
@@ -41,7 +53,6 @@ class ExperienceController extends Controller
             $user = Auth::user();
             $student = Student::where('user_id',$user->id)->first();
             $request->validate([
-
                 'position' => 'required',
                 'company_name' => 'required',
                 'field' => 'required',

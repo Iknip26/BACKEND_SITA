@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CounselingResource;
 use App\Models\Counseling;
 use App\Models\Lecturer;
 use App\Models\Student;
@@ -22,13 +23,25 @@ class CounselingController extends Controller
                 $dosen = Lecturer::where('user_id', $user->id)->first();
                 // dd($dosen);
                 $counselings = Counseling::with('project.lecturer.user')->with('student.user')->where('lecturer_id',$dosen->id)->orderByDesc('id')->paginate(10);
-                return response()->json(['data' => $counselings],200);
+
             }
             else if($user->role == 'Mahasiswa'){
                 $student = Student::where('user_id',$user->id)->first();
                 $counselings = Counseling::with('student.user')->with('student.user')->with('project')->where('student_id',$student->id)->orderByDesc('id')->paginate();
-                return response()->json(['data' => $counselings],200);
+
             }
+        // Get the data and meta separately
+        $response = CounselingResource::collection($counselings)->response();
+        $headers = $response->headers->all();
+
+        return response()->json([
+            'headers' => $headers, // Adding headers for debugging
+            'message' => "data retrieved successfully",
+            'data' => $response->getData(true)['data'], // The actual data
+            'meta' => $response->getData(true)['meta'], // Pagination meta information
+            'links' => $response->getData(true)['links'], // Pagination links
+
+        ], 200);
             // else{
             //     return response()->json(["Not Authenticate"],400);
             // }
@@ -40,8 +53,30 @@ class CounselingController extends Controller
     public function show($id)
     {
         try {
-            $counseling = Counseling::with('student.user')->with('project.lecturer.user')->findOrFail($id);
-            return response()->json(['data' => $counseling]);
+            // dd($id);
+            $user = Auth::user();
+            if($user->role == "Mahasiswa" ){
+                $Mahasiswa = Student::where("user_id",$user->id)->first();
+                // dd($Mahasiswa);
+                $counseling = Counseling::with('student.user')->with('project')->with('lecturer.user')->findOrFail($id);
+                if($counseling->student_id != $Mahasiswa->id){
+                    return response()->json([
+                        'message' => "unauthorized",
+                    ],401);
+                }
+            }
+            elseif($user->role == "Dosen" ){
+                $Dosen = Lecturer::where("user_id",$user->id)->first();
+                $counseling = Counseling::with('student')->with('project')->with('lecturer')->findOrFail($id);
+                if($counseling->lecturer_id != $Dosen->id){
+                    return response()->json([
+                        'message' => "unauthorized",
+                    ],401);
+                }
+            }
+            return response()->json([
+                'message' => "data retrieved successfully",
+                'data' => new CounselingResource($counseling)]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 404);
         }
@@ -54,11 +89,12 @@ class CounselingController extends Controller
                 'student_id' => 'required',
                 'lecturer_id' => 'required',
                 'project_id' => 'required',
-                'tanggal' => 'required|date',
-                'subjek' => 'required',
-                'catatan_dosen' => 'nullable',
+                'date' => 'required|date',
+                'subject' => 'required',
+                'lecturer_note' => 'nullable',
                 'file' => 'nullable|file|mimes:pdf,doc,docx,txt|max:100000',
                 'progress' => 'required',
+
             ]);
 
             $data = $request->all();

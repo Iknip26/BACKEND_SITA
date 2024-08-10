@@ -12,6 +12,5 @@ class Announcement extends Model
         "title",
         "detail",
         "attachment",
-        "action"
     ];
 }

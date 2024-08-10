@@ -12,12 +12,13 @@ class Counseling extends Model
         "student_id",
         "lecturer_id",
         "project_id",
-        "tanggal",
-        "subjek",
-        "deskripsi",
-        "catatan_dosen",
+        "date",
+        "subject",
+        "description",
+        "lecturer_note",
         "file",
-        "progress"
+        "progress",
+        "status"
     ];
 
     public function student() {

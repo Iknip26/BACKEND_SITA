@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\LecturerResource;
+use App\Http\Resources\StudentResource;
 use App\Models\Lecturer;
 use App\Models\Student;
 use App\Models\User;
@@ -31,10 +33,11 @@ class AuthController extends Controller
             'username' => $request->username,
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
-            'profile_photo' => "https://t3.ftcdn.net/jpg/06/03/30/74/360_F_603307418_jya3zntHWjXWn3WHn7FOpjFevXwnVP52.jpg",
+            // 'profile_photo' => "https://t3.ftcdn.net/jpg/06/03/30/74/360_F_603307418_jya3zntHWjXWn3WHn7FOpjFevXwnVP52.jpg",
             'role' => $request->role,
             'password' => $hashedPassword,
         ]);
+
 
         // dd($request->user());
 
@@ -84,10 +87,13 @@ class AuthController extends Controller
     public function currentUser(Request $request){
         $tmpdata = Auth::user();
         $profileData = null;
-        if($tmpdata["role"] == "Mahasiswa"){
-            $profileData = Student::where('user_id', $tmpdata["id"])->get();
-        }else{
-            $profileData = Lecturer::where('user_id', $tmpdata["id"])->get();
+        if ($tmpdata->role == "Mahasiswa") {
+            $student = Student::with('skills')->with('achievements')->where('user_id', $tmpdata->id)->first();
+            if ($student) {
+                $profileData = new StudentResource($student);
+            }
+        } else {
+            $profileData = new LecturerResource(Lecturer::where('user_id', $tmpdata->id)->first());
         }
         // dd($profileData);
         return response()->json([
@@ -95,5 +101,14 @@ class AuthController extends Controller
             'user_data' => $tmpdata,
             'profile_data' => $profileData,
         ]);
+    }
+
+    public function UpdateCurrentUser(Request $request) {
+        $user = Auth::user();
+        if($user->role = "Mahasiswa"){
+            $request -> validate([
+                "profile_photo"
+            ]);
+        }
     }
 }

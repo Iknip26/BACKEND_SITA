@@ -23,6 +23,13 @@ return new class extends Migration
             $table->boolean('sidang')->default(false);
             $table->boolean('judul')->default(false);
             $table->boolean('yudisium')->default(false);
+            $table->string("skill")->nullable();
+            $table->string("github")->nullable();
+            $table->string("linkedin")->nullable();
+            $table->string("cv")->nullable();
+            $table->string("portofolio")->nullable();
+            $table->string("website")->nullable();
+            $table->string("skills")->nullable();
             $table->timestamps();
             $table->foreign("user_id")->references('id')->on('users');
         });
