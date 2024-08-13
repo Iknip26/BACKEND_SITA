@@ -10,7 +10,8 @@ class Project extends Model
     use HasFactory;
 
     protected $fillable = [
-        "lecturer_id",
+        "lecturer1_id",
+        'lecturer2_id',
         "title",
         "agency",
         "description",
@@ -18,7 +19,8 @@ class Project extends Model
         "status",
         "Approval",
         'instance',
-        'year'
+        'year',
+        'uploadedBy'
     ];
 
     public function counseling() {
@@ -27,9 +29,14 @@ class Project extends Model
 
     }
 
-    public function lecturer() {
+    public function lecturer1() {
 
-        return $this->belongsTo(Lecturer::class, 'lecturer_id', 'id');
+        return $this->belongsTo(Lecturer::class, 'lecturer1_id', 'id');
+
+    }
+    public function lecturer2() {
+
+        return $this->belongsTo(Lecturer::class, 'lecturer2_id', 'id');
 
     }
 }

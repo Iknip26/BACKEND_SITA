@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AchievementController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CounselingController;
@@ -50,6 +51,7 @@ Route::middleware(['auth:sanctum'])->group( function () {
         Route::put('/student/{student}', [StudentController::class, 'update']);
         Route::delete('/student/{student}', [StudentController::class, 'destroy']);
         Route::apiResource('/skill', SkillController::class);
+        Route::apiResource('/achievement',AchievementController::class);
         Route::apiResource('/experience',ExperienceController::class);
     });
 
@@ -63,7 +65,7 @@ Route::middleware(['auth:sanctum'])->group( function () {
     });
 
     // api hanya kaprodi tapi kaprodi bisa melihat yang ada di dosen
-    Route::middleware(['role:kaprodi'])->group(function(){
+    Route::middleware(['role:'])->group(function(){
         Route::get('/lecturer',[LecturerController::class,'index']);
         Route::get('/student',[StudentController::class,'index']);
         Route::post('/announcement', [AnnouncementController::class, 'store']);

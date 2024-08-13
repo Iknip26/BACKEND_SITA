@@ -15,17 +15,22 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("lecturer_id");
+            $table->foreignId("lecturer1_id")->nullable();
+            $table->foreignId("lecturer2_id")->nullable();
             $table->string("title");
             $table->string("agency");
-            $table->string("description");
+            $table->text("description")->nullable();
             $table->string("tools");
             $table->string("instance");
             $table->enum("status",["bimbingan","revisi","proses"]);
             $table->enum("Approval",["Approved","Not Approved", "Not yet Approved"]);
             $table->string("year");
+            $table->enum('uploadedBy',['Dosen', 'Mahasiswa']);
             $table->timestamps();
-            $table->foreign("lecturer_id")->references('id')->on('lecturers');
+
+            $table->foreign("lecturer1_id")->references('id')->on('lecturers');
+            $table->foreign("lecturer2_id")->references('id')->on('lecturers');
+
 
         });
     }

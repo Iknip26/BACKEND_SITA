@@ -15,6 +15,7 @@ class StudentResource extends JsonResource
     public function toArray($request): array
     {
         // dd($this);
+        $skillsArray = explode(',', $this->skill);
         return [
             'id' => $this->id,
             'user' => new UserResource($this->whenLoaded('user')),
@@ -26,7 +27,7 @@ class StudentResource extends JsonResource
             'link_github' => $this->link_github,
             'link_porto' => $this->link_porto,
             'link_linkedin' => $this->link_linkedin,
-            'skills' => SkillResource::collection($this->whenLoaded('skills')),
+            'skills' => $skillsArray,
             'achievement' => AchievementResource::collection($this->whenLoaded('achievements'))
         ];
     }

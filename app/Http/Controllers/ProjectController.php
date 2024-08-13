@@ -9,45 +9,65 @@ use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use App\Http\Resources\ProjectResource;
 use App\Models\Period;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
     public function index(Request $request)
-    {
-        try {
-            $query = Project::with('lecturer.user');
-            if ($request->has('dosen')) {
-                $searchTerm = $request->input('dosen');
-                $query->whereHas('lecturer.user', function ($q) use ($searchTerm) {
-                    $q->where('first_name', 'LIKE', '%' . $searchTerm . '%')
-                      ->orWhere('last_name', 'LIKE', '%' . $searchTerm . '%');
-                });
-            }
-            if ($request->has('status')) {
-                $query->where('status', $request->input('status'));
-            }
-            if ($request->has('Approval')) {
-                $query->where('Approval', $request->input('Approval'));
-            }
-            if ($request->has('tools')) {
-                $query->where('tools', 'like', '%' . $request->input('tools') . '%');
-            }
-            $projects = $query->paginate(10);
-            return response()->json([
-                'message'=>'project retrieved success there is '.$projects->total() ." projects",
-                'data' => ProjectResource::collection($projects),
-                'meta' => [
-                    'total' => $projects->total(),
-                    'per_page' => $projects->perPage(),
-                    'current_page' => $projects->currentPage(),
-                    'last_page' => $projects->lastPage(),
-                ]
-            ], 200);
+{
+    try {
+        $user = Auth::user();
 
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+        $query = Project::with('lecturer1.user', 'lecturer2.user'); // Include both lecturers
+
+        if ($user->role == "Dosen") {
+            $dosen = Lecturer::where('user_id', $user->id)->first();
+            $query->where(function ($q) use ($dosen) {
+                $q->where('lecturer1_id', $dosen->id)
+                  ->orWhere('lecturer2_id', $dosen->id);
+            });
         }
+
+        if ($request->has('dosen')) {
+            $searchTerm = $request->input('dosen');
+            $query->whereHas('lecturer1.user', function ($q) use ($searchTerm) {
+                $q->where('first_name', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('last_name', 'LIKE', '%' . $searchTerm . '%');
+            })->orWhereHas('lecturer2.user', function ($q) use ($searchTerm) {
+                $q->where('first_name', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('last_name', 'LIKE', '%' . $searchTerm . '%');
+            });
+        }
+
+        if ($request->has('status')) {
+            $query->where('status', $request->input('status'));
+        }
+        if ($request->has('Approval')) {
+            $query->where('Approval', $request->input('Approval'));
+        }
+        if ($request->has('tools')) {
+            $query->where('tools', 'like', '%' . $request->input('tools') . '%');
+        }
+
+        $projects = $query->paginate(6);
+        return response()->json([
+            'message' => 'Projects retrieved successfully. There are ' . $projects->total() . " projects",
+            'data' => ProjectResource::collection($projects),
+            'meta' => [
+                'total' => $projects->total(),
+                'per_page' => $projects->perPage(),
+                'current_page' => $projects->currentPage(),
+                'last_page' => $projects->lastPage(),
+                'next_page' => $projects->nextPageUrl(),
+                'previous_page' => $projects->previousPageUrl()
+            ]
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
     }
+}
+
 
     public function show($id)
     {
@@ -62,6 +82,8 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         try {
+            $user = Auth::user();
+
             $activePeriod = Period::where('status', 'inProgress')->first();
 
             if (!$activePeriod) {
@@ -69,7 +91,7 @@ class ProjectController extends Controller
             }
 
             $request->validate([
-                'lecturer_id' => 'required|exists:lecturers,id',
+
                 'title' => 'required',
                 'agency' => 'required',
                 'description' => 'required',
@@ -81,6 +103,7 @@ class ProjectController extends Controller
 
             $data = $request->all();
             $data['year'] = $activePeriod->year;
+            if($user->role == 'lecturer')
 
             $project = Project::create($data);
 

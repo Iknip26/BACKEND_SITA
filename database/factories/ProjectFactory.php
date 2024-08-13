@@ -20,9 +20,11 @@ class ProjectFactory extends Factory
     {
         $lecturerIds = Lecturer::pluck('id')->toArray();
         $year = Period::pluck('year')->toArray();
+        $role = ['Dosen', 'Mahasiswa'];
 
         return [
-            'lecturer_id' => $this->faker->randomElement($lecturerIds),
+            'lecturer1_id' => $this->faker->randomElement($lecturerIds),
+            'lecturer2_id' => $this->faker->randomElement($lecturerIds),
             'title' => $this->faker->sentence,
             'agency' => $this->faker->company,
             'description' => $this->faker->paragraph,
@@ -31,6 +33,7 @@ class ProjectFactory extends Factory
             'year' => $this->faker->randomElement($year),
             'status' => $this->faker->randomElement(['bimbingan', 'revisi', 'proses']),
             'Approval' => $this->faker->randomElement(['Approved', 'Not Approved', 'Not yet Approved']),
+            'uploadedBy' => $this->faker->randomElement($role),
             'created_at' => now(),
             'updated_at' => now(),
         ];

@@ -88,7 +88,7 @@ class AuthController extends Controller
         $tmpdata = Auth::user();
         $profileData = null;
         if ($tmpdata->role == "Mahasiswa") {
-            $student = Student::with('skills')->with('achievements')->where('user_id', $tmpdata->id)->first();
+            $student = Student::with('achievements')->where('user_id', $tmpdata->id)->first();
             if ($student) {
                 $profileData = new StudentResource($student);
             }

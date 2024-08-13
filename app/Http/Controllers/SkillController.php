@@ -24,7 +24,12 @@ class SkillController extends Controller
             // ],200);
             $student = Student::where('user_id',$user->id)->first();
 
-            dd($student);
+            $skillsArray = explode(',', $student->skill);
+            // dd($skillsArray);
+                        return response()->json([
+                'message'=>'data retrieved successfully',
+                'data' => $skillsArray,
+            ],200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -63,13 +68,13 @@ class SkillController extends Controller
             $skillsArray = explode(',', $request->skill);
 
             // Save the skills as a comma-separated string
-            $student->skills = implode(',', array_map('trim', $skillsArray));
+            $student->skill = implode(',', array_map('trim', $skillsArray));
             $student->save();
 
             return response()->json([
                 'message' => "Data retrieved successfully",
                 'user' => $user->first_name . " " . $user->last_name,
-                'data' => $skillsArray
+                'data' => $student
             ], 201);
         } catch (QueryException $e) {
             return response()->json(['error' => 'Database error: ' . $e->getMessage()], 500);
