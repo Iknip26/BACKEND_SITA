@@ -24,7 +24,7 @@ class ExperienceResource extends JsonResource
             'description' => $this->description,
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
-            'student' => new StudentResource($this->whenLoaded('student')),
+            // 'student' => new StudentResource($this->whenLoaded('student')),
         ];
     }
 }

@@ -28,8 +28,14 @@ class AchievementController extends Controller
     public function store(Request $request)
     {
         try {
-            $achievement = Achievement::create($request->all());
-            return new AchievementResource($achievement);
+            $user = Auth::user();
+            $student = Student::where('user_id', $user->id)->firstOrFail();
+            $data = $request->all();
+            $data['student_id'] = $student->id;
+            $achievement = Achievement::create($data);
+            return response() -> json(['message' => 'data store successfully',
+            'data'=> new AchievementResource($achievement),
+        ],201);
         } catch (\Exception $e) {
             return response()->json(['message' => 'An error occurred while creating the achievement'], 500);
         }
@@ -60,9 +66,10 @@ class AchievementController extends Controller
         }
     }
 
-    public function destroy(Achievement $achievement)
+    public function destroy($id)
     {
         try {
+            $achievement = Achievement::findOrFail($id);
             $achievement->delete();
             return response()->json(null, 204);
         } catch (\Exception $e) {

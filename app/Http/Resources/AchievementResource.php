@@ -19,7 +19,7 @@ class AchievementResource extends JsonResource
             'achievement type' => $this->achievement_type,
             'achievement level' => $this->achievement_level,
             'achievement year' => $this->achievement_year,
-            'description'
+            'description' => $this->description
         ];
     }
 }
