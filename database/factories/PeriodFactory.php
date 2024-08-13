@@ -22,7 +22,7 @@ class PeriodFactory extends Factory
             //
             'semester'=> $this->faker->randomElement($semester),
             'year' => $this->faker->year,
-            'status' => $this->faker->randomElement($status),
+            'status' => "ended",
             'start_date' => $this->faker->date(),
             'end_date' => $this->faker->date()
         ];

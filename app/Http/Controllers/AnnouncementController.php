@@ -17,7 +17,10 @@ class AnnouncementController extends Controller
     {
         try {
             $announcements = Announcement::all();
-            return response()->json($announcements, 200);
+            return response()->json([
+                "message" => "data retrieved successfully",
+            "data" => $announcements
+        ], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to retrieve announcements'], 500);
         }

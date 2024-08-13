@@ -34,14 +34,24 @@ class PeriodController extends Controller
             $request->validate([
                 'semester' => 'required|string|max:255',
                 'year' => 'required|integer',
-                'status' => 'required|string|max:255',
+
                 'start_date' => 'required|date',
                 'end_date' => 'required|date|after_or_equal:start_date',
             ]);
+            $data = $request->all();
+            $data['status'] = "inProgresss";
+            $period = Period::create($data);
 
-            $period = Period::create($request->all());
+            $activePeriod = Period::findOrFail("inProgress")->first();
 
-            return response()->json(['data' => $period], 201);
+            if ($activePeriod) {
+                $activePeriod->status = 'ended';
+                $activePeriod->save();
+            }
+
+            return response()->json(['message' => "data successfully created",
+            'data' => $period],
+             201);
         } catch (QueryException $e) {
             return response()->json(['error' => 'Database error: ' . $e->getMessage()], 500);
         } catch (\Exception $e) {
@@ -63,7 +73,8 @@ class PeriodController extends Controller
             $period = Period::findOrFail($id);
             $period->update($request->all());
 
-            return response()->json(['data' => $period], 200);
+            return response()->json(['message' => 'data successfully updated',
+            'data' => $period], 200);
         } catch (QueryException $e) {
             return response()->json(['error' => 'Database error: ' . $e->getMessage()], 500);
         } catch (\Exception $e) {
@@ -77,7 +88,7 @@ class PeriodController extends Controller
             $period = Period::findOrFail($id);
             $period->delete();
 
-            return response()->json(null, 204);
+            return response()->json(["message" => "periode ".$period->year." deleted"], 204);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

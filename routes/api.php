@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AnnouncementController;
-use App\Http\Controllers\Api\AnnouncementController as ApiAnnouncementController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CounselingController;
 use App\Http\Controllers\EmailVerificationController;
@@ -13,8 +12,6 @@ use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\StudentController;
-use App\Models\Period;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,21 +27,49 @@ use Illuminate\Support\Facades\Route;
 */
 Route::post('/register',[AuthController::class,'register']);
 Route::post('/login',[AuthController::class,'login']);
-Route::apiResource('/student',StudentController::class);
+
 // Route::get('/student/udpateSkill/', [DosenPageController::class,  'dashboard'])->name('dosen.dashboard');
-
-Route::apiResource('/lecturer',LecturerController::class);
-Route::apiResource('/project',ProjectController::class);
-
-
 Route::apiResource('/period',PeriodController::class);
+
+// harus ada token
 Route::middleware(['auth:sanctum'])->group( function () {
     Route::get('/user', [AuthController::class, 'currentUser']);
-    Route::apiResource('/skill', SkillController::class);
-    Route::put('/skill/updateSkill/{id}', [SkillController::class, 'updateSkill'])->name('skill.updateSkill');
-
     Route::apiResource('/counseling',CounselingController::class);
-    Route::apiResource('/experience',ExperienceController::class);
+    Route::apiResource('/project',ProjectController::class);
+    Route::get('/download/{filename}',[FileController::class,'download']);
+    Route::get('/annoucementFile/{path}',[FileController::class,'showAttachment']);
+
+    Route::get('/announcement', [AnnouncementController::class, 'index']);
+    Route::get('/announcement/{announcement}', [AnnouncementController::class, 'show']);
+
+    // api hanya untuk mahasiswa
+    Route::middleware(['role:student'])->group(function(){
+        // Route::get('p',function(){return "Welcome to the student dashboard!";});
+        Route::post('/student', [StudentController::class, 'store']);
+        Route::get('/student/{student}', [StudentController::class, 'show']);
+        Route::put('/student/{student}', [StudentController::class, 'update']);
+        Route::delete('/student/{student}', [StudentController::class, 'destroy']);
+        Route::apiResource('/skill', SkillController::class);
+        Route::apiResource('/experience',ExperienceController::class);
+    });
+
+    // api hanya untuh Dosen
+    Route::middleware(['role:lecturer'])->group(function () {
+        Route::post('/lecturer', [LecturerController::class, 'store']);
+        Route::get('/lecturer/{lecturer}', [LecturerController::class, 'show']);
+        Route::put('/lecturer/{lecturer}', [LecturerController::class, 'update']);
+        Route::delete('/lecturer/{lecturer}', [LecturerController::class, 'destroy']);
+
+    });
+
+    // api hanya kaprodi tapi kaprodi bisa melihat yang ada di dosen
+    Route::middleware(['role:kaprodi'])->group(function(){
+        Route::get('/lecturer',[LecturerController::class,'index']);
+        Route::get('/student',[StudentController::class,'index']);
+        Route::post('/announcement', [AnnouncementController::class, 'store']);
+        Route::put('/announcement/{announcement}', [AnnouncementController::class, 'update']);
+        Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy']);
+    });
 
     Route::post('/logout',[AuthController::class,'logout']);
 });
@@ -52,7 +77,5 @@ Route::middleware(['auth:sanctum'])->group( function () {
 Route::post('/email/verification-link', [EmailVerificationController::class, 'getVerificationLink']);
 Route::get('verify-email/{id}/{hash}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
 Route::post('/email/verification-notification', [EmailVerificationController::class, 'sendVerificationEmail']);
-Route::get('/download/{filename}',[FileController::class,'download']);
-Route::apiResource('/announcement',AnnouncementController::class);
-Route::get('/annoucementFile/{path}',[FileController::class,'showAttachment']);
+
 Route::post('/parse-pdf', [PdfParserController::class, 'parse']);

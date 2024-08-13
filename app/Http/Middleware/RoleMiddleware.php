@@ -20,13 +20,17 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, $role)
     {
         $user = Auth::user();
-
-        if ($role === 'student' && !$user->student) {
+        // dd($role);
+        if ($role === 'student' && (!$user->role == "Mahasiswa" ||!$user->role == "Kaprodi")) {
             return response()->json(['error' => 'Access denied. Only students can access this route.'], 403);
         }
 
-        if ($role === 'lecturer' && !$user->lecturer) {
+        if ($role === 'lecturer' && (!$user->role != "Dosen" || !$user->role == "Kaprodi")) {
             return response()->json(['error' => 'Access denied. Only lecturers can access this route.'], 403);
+        }
+
+        if ($role === 'kaprodi' && !$user->role == "Kaprodi") {
+            return response()->json(['error' => 'Access denied. Only Kaprodi can access this route.'], 403);
         }
 
         return $next($request);
