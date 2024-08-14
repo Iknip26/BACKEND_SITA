@@ -61,6 +61,7 @@ Route::middleware(['auth:sanctum'])->group( function () {
         Route::get('/lecturer/{lecturer}', [LecturerController::class, 'show']);
         Route::put('/lecturer/{lecturer}', [LecturerController::class, 'update']);
         Route::delete('/lecturer/{lecturer}', [LecturerController::class, 'destroy']);
+        Route::post('/lecturer/Approval/{id}',[ProjectController::class,'Approval']);
 
     });
 

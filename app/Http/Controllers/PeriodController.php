@@ -31,33 +31,36 @@ class PeriodController extends Controller
     public function store(Request $request)
     {
         try {
-            $request->validate([
+            // Validate the incoming request
+            $validatedData = $request->validate([
                 'semester' => 'required|string|max:255',
                 'year' => 'required|integer',
-
                 'start_date' => 'required|date',
                 'end_date' => 'required|date|after_or_equal:start_date',
             ]);
-            $data = $request->all();
-            $data['status'] = "inProgresss";
-            $period = Period::create($data);
 
-            $activePeriod = Period::findOrFail("inProgress")->first();
+            // Set the status to "inProgress"
+            $validatedData['status'] = "inProgress";
 
-            if ($activePeriod) {
-                $activePeriod->status = 'ended';
-                $activePeriod->save();
-            }
+            // Create the new Period record
+            $period = Period::create($validatedData);
 
-            return response()->json(['message' => "data successfully created",
-            'data' => $period],
-             201);
+            // Return a success response
+            return response()->json([
+                'message' => "Data successfully created",
+                'data' => $period
+            ], 201);
+
         } catch (QueryException $e) {
+            // Return a database error response
             return response()->json(['error' => 'Database error: ' . $e->getMessage()], 500);
+
         } catch (\Exception $e) {
+            // Return a general error response
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
+
 
     public function update(Request $request, $id)
     {

@@ -17,7 +17,8 @@ class Project extends Model
         "description",
         "tools",
         "status",
-        "Approval",
+        "Approval_lecturer_1",
+        "Approval_lecturer_2",
         'instance',
         'year',
         'uploadedBy'

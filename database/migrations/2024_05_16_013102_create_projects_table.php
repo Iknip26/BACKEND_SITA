@@ -22,16 +22,15 @@ return new class extends Migration
             $table->text("description")->nullable();
             $table->string("tools");
             $table->string("instance");
-            $table->enum("status",["bimbingan","revisi","proses"]);
-            $table->enum("Approval",["Approved","Not Approved", "Not yet Approved"]);
+            $table->enum("status",["counseling","revision","process","not taken yet"]);
+            $table->enum("Approval_lecturer_1",["Approved","Not Approved", "Not yet Approved"])->nullable();
+            $table->enum("Approval_lecturer_2",["Approved","Not Approved", "Not yet Approved"])->nullable();
             $table->string("year");
             $table->enum('uploadedBy',['Dosen', 'Mahasiswa']);
             $table->timestamps();
 
             $table->foreign("lecturer1_id")->references('id')->on('lecturers');
             $table->foreign("lecturer2_id")->references('id')->on('lecturers');
-
-
         });
     }
 

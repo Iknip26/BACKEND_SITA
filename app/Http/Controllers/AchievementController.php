@@ -56,9 +56,11 @@ class AchievementController extends Controller
         }
     }
 
-    public function update(Request $request, Achievement $achievement)
+    public function update(Request $request, $id)
     {
         try {
+            $achievement = Achievement::findOrFail($id);
+
             $achievement->update($request->all());
             return new AchievementResource($achievement);
         } catch (\Exception $e) {

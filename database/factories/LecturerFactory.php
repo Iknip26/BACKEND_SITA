@@ -19,8 +19,8 @@ class LecturerFactory extends Factory
         return [
             //
             'user_id' => null,
-            'front_title' => $this->faker->randomElement(['Dr.', 'Prof.', '']),
-            'back_title' => $this->faker->randomElement(['PhD', 'MSc', '']),
+            'front_title' => $this->faker->randomElement(['Dr.', 'Prof.','']),
+            'back_title' => $this->faker->randomElement(['PhD', 'MSc']),
             'NID' => $this->faker->unique()->numerify('########'),
             'photo_profile' => $this->faker->imageUrl(),
             'max_quota' => $this->faker->numberBetween(1, 10),
