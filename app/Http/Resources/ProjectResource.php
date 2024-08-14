@@ -23,11 +23,14 @@ class ProjectResource extends JsonResource
             "description" => $this->description,
             "tools" => $this->tools,
             "status" => $this->status,
-            "Approval" => $this->Approval,
+            "Approval dosen 1" => $this->Approval_lecturer_1,
+            "Approval dosen 2" => $this->Approval_lecturer_2,
+            "Approval kaprodi" => $this->Approval_kaprodi,
             'instance' => $this->instance,
             "year" => $this->year,
-            "lecturer" => new LecturerResource($this->whenLoaded('lecturer')),
-            'uploadedBy' => $this->uploadedBy
+            'uploadedBy' => $this->uploadedBy,
+            "Dosen 1" => new LecturerResource($this->whenLoaded('lecturer1')),
+            "Dosen 2" => new LecturerResource($this->whenLoaded('lecturer2')),
         ];
     }
 }

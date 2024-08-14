@@ -15,5 +15,8 @@ class PeriodSeeder extends Seeder
     {
         //
         Period::factory()->count(3)->create();
+        Period::factory()->count(1)->create([
+            'status' => 'inProgress',
+        ]);
     }
 }

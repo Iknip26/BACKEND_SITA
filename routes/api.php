@@ -53,6 +53,7 @@ Route::middleware(['auth:sanctum'])->group( function () {
         Route::apiResource('/skill', SkillController::class);
         Route::apiResource('/achievement',AchievementController::class);
         Route::apiResource('/experience',ExperienceController::class);
+        Route::post('student/dospem/{id}',[ProjectController::class,'Dospem2']);
     });
 
     // api hanya untuh Dosen
@@ -62,6 +63,7 @@ Route::middleware(['auth:sanctum'])->group( function () {
         Route::put('/lecturer/{lecturer}', [LecturerController::class, 'update']);
         Route::delete('/lecturer/{lecturer}', [LecturerController::class, 'destroy']);
         Route::post('/lecturer/Approval/{id}',[ProjectController::class,'Approval']);
+        Route::post('/lecturer/Approval/Kaprodi/{id}',[ProjectController::class,'ApprovalKaprodi']);
 
     });
 

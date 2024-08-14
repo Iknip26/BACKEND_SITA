@@ -3,36 +3,52 @@
 namespace App\Services;
 
 use Spatie\PdfToText\Pdf;
-use Exception;
 
 class PdfParserService
 {
-    protected $pdfToTextPath;
-
-    public function __construct()
-    {
-        $this->pdfToTextPath = env('PDFTOTEXT_PATH', 'C:\Users\Fabih\AppData\Local\poppler-24.07.0\Library\bin\pdftotext.exe');
-    }
-    public function parse($pdfPath)
+    public function parse($path)
     {
         try {
-            // dd($pdfPath);
-            $data = Pdf::getText($pdfPath,$this->pdfToTextPath);
-            // $text = Pdf::getText($pdfPath);
+            // Extract text from the PDF using Spatie's PdfToText package
+            $text = (new Pdf())->setPdf($path)->text();
 
-            // Here you need to parse the text to extract the relevant data
-            // $data = [];
-            // if (preg_match('/Name:\s*(.+)/', $text, $matches)) {
-            //     $data['name'] = trim($matches[1]);
-            // }
-            // if (preg_match('/NIM:\s*(\d+)/', $text, $matches)) {
-            //     $data['NIM'] = trim($matches[1]);
-            // }
-            // // Add more parsing logic as needed
+            // Process the text to extract structured data
+            $parsedData = $this->extractUserData($text);
 
-            return $data;
-        } catch (\RuntimeException $e) {
-            throw new \RuntimeException('An error occurred while parsing the PDF: ' . $e->getMessage());
+            return $parsedData;
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Failed to parse the PDF file.');
         }
+    }
+
+    private function extractUserData($text)
+    {
+        // Custom logic to extract user data from the text
+        // In this example, I'll use regex to extract user information
+
+        // Initialize an array to hold the extracted data
+        $userData = [];
+
+        // Regular expression to match user data (adjust this regex based on the actual text structure)
+        $pattern = '/(\d+)\s+([a-zA-Z0-9_]+)\s+([a-zA-Z]+)\s+([a-zA-Z]+)\s+([\w.@]+)\s+([\S]+)\s+([\w@]+)\s+([\d-:\s]+)\s+([\d-:\s]+)/';
+
+        // Use preg_match_all to find all matches
+        if (preg_match_all($pattern, $text, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $match) {
+                $userData[] = [
+                    'id' => $match[1],
+                    'username' => $match[2],
+                    'first_name' => $match[3],
+                    'last_name' => $match[4],
+                    'email' => $match[5],
+                    'role' => $match[7],
+                    'last_login' => $match[8],
+                    'created_at' => $match[9],
+                    'updated_at' => $match[9]
+                ];
+            }
+        }
+
+        return $userData;
     }
 }

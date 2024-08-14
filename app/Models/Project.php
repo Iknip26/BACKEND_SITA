@@ -19,6 +19,7 @@ class Project extends Model
         "status",
         "Approval_lecturer_1",
         "Approval_lecturer_2",
+        "Approval_kaprodi",
         'instance',
         'year',
         'uploadedBy'

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use App\Http\Resources\ProjectResource;
 use App\Models\Period;
+use App\Models\Student;
 use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
@@ -25,11 +26,16 @@ class ProjectController extends Controller
                 $q->where('lecturer1_id', $dosen->id)
                   ->orWhere('lecturer2_id', $dosen->id);
             });
+
+            if($dosen->isKaprodi == false){
+                $query->where('Approval_kaprodi','Approved');
+            }
         }
 
-        // elseif($user->role == "Mahasiswa"){
-        //     $query->where('status','not taken yet');
-        // }
+
+        elseif($user->role == "Mahasiswa"){
+            $query->where('Approval_kaprodi','Approved');
+        }
 
         if ($request->has('dosen')) {
             $searchTerm = $request->input('dosen');
@@ -52,6 +58,10 @@ class ProjectController extends Controller
 
         if ($request->has('tools')) {
             $query->where('tools', 'like', '%' . $request->input('tools') . '%');
+        }
+
+        if($request->has('kaprodi')){
+            $query->where('Approval_kaprodi',$request->input('kaprodi'));
         }
 
         $projects = $query->paginate(6);
@@ -103,7 +113,6 @@ class ProjectController extends Controller
                 'agency' => 'required',
                 'description' => 'required',
                 'tools' => 'required',
-                'status' => 'required|in:bimbingan,revisi,progress',
                 'instance' => 'required',
             ]);
 
@@ -119,19 +128,20 @@ class ProjectController extends Controller
                 $data['Approval_lecturer_1'] = 'Not yet Approved';
                 $data['Approval_lecturer_2'] = 'Not yet Approved';
                 $data['status'] = 'process';
-            }
-
-            $data['year'] = $activePeriod->year;
-            if($user->role == 'Lecturer'){
-                $dosen = Lecturer::where('user_id', $user->id);
-                $data['uploadedBy'] = 'Dosen';
-                $data['lecturer1_id'] = $dosen->id;
-            }
-
-            else if($user->role == 'Mahasiswa'){
                 $data['uploadedBy'] = 'Mahasiswa';
             }
 
+            elseif($user->role == 'Dosen'){
+                $dosen = Lecturer::where('user_id', $user->id)->firstOrFail();
+                // dd($dosen);
+                $data['uploadedBy'] = 'Dosen';
+                $data['lecturer1_id'] = $dosen->id;
+                $data['status'] = 'not taken yet';
+                // $data['Approval_lecturer_1'] = 'Approved';
+            }
+
+            $data['year'] = $activePeriod->year;
+            $data['Approval_kaprodi'] = 'Not yet Approved';
             $project = Project::create($data);
 
             return response()->json(['message' => "project successfully created",
@@ -155,13 +165,13 @@ class ProjectController extends Controller
                 'agency' => 'required',
                 'description' => 'required',
                 'tools' => 'required',
-                'status' => 'required|in:counseling,revision,progress,not taken yet',
+                'status' => 'required|in:counseling,revision,process,not taken yet',
                 'instance' => 'required',
-
             ]);
 
             $project = Project::findOrFail($id);
-            $project->update($request->except(['id']));
+
+            $project->update($validated);
 
             return response()->json(['data' => new ProjectResource($project)], 200);
         } catch (QueryException $e) {
@@ -176,9 +186,10 @@ class ProjectController extends Controller
     {
         try {
             $project = Project::findOrFail($id);
+
             $project->delete();
 
-            return response()->json(null, 204);
+            return response()->json(["message" => " udah di delete sayang"], 204);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -211,6 +222,44 @@ class ProjectController extends Controller
             return response()->json(['message' => 'Approval updated successfully'], 200);
 
         }catch(\Exception $e){
+            return response()->json(['error' => $e->getMessage()],500);
+        }
+    }
+
+    public function ApprovalKaprodi(Request $request, $id){
+        try {
+            $project = Project::findOrFail($id);
+            $user = Auth::user();
+            $dosen = Lecturer::where('user_id',$user->id)->first();
+            if($dosen->isKaprodi != true){
+                return response()->json(['message' => 'you are not kaprodi'],403);
+            }
+
+            $validated = $request->validate([
+                'Approval' => 'required|in:Approved,Not Approved',
+            ]);
+
+            $project->update(['Approval_kaprodi' => $validated['Approval']]);
+            return response()->json(['message' => 'Approval updated successfully'], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()],500);
+        }
+    }
+
+    public function Dospem2(Request $request, $id){
+        try {
+            $project = Project::findOrFail($id);
+            $user = Auth::user();
+
+            $validated = $request->validate([
+                'lecturer2_id' => 'required',
+            ]);
+            $data = $validated;
+            $data['status'] = 'process';
+            $project->update($data);
+            return response()->json(['message' => 'dospem updated successfully'], 200);
+        }catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()],500);
         }
     }

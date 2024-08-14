@@ -25,6 +25,7 @@ return new class extends Migration
             $table->enum("status",["counseling","revision","process","not taken yet"]);
             $table->enum("Approval_lecturer_1",["Approved","Not Approved", "Not yet Approved"])->nullable();
             $table->enum("Approval_lecturer_2",["Approved","Not Approved", "Not yet Approved"])->nullable();
+            $table->enum("Approval_kaprodi",["Approved","Not Approved", "Not yet Approved"])->nullable();
             $table->string("year");
             $table->enum('uploadedBy',['Dosen', 'Mahasiswa']);
             $table->timestamps();
