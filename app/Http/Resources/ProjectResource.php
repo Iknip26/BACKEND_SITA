@@ -31,6 +31,7 @@ class ProjectResource extends JsonResource
             'uploadedBy' => $this->uploadedBy,
             "Dosen_1" => new LecturerResource($this->whenLoaded('lecturer1')),
             "Dosen_2" => new LecturerResource($this->whenLoaded('lecturer2')),
+            "Created_at" => $this->created_at
         ];
     }
 }
