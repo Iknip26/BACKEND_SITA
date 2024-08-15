@@ -17,6 +17,7 @@ class ProjectController extends Controller
 {
     try {
         $user = Auth::user();
+        dd($user);
 
         $query = Project::with('lecturer1.user', 'lecturer2.user');
 
@@ -31,7 +32,6 @@ class ProjectController extends Controller
                 $query->where('Approval_kaprodi','Approved');
             }
         }
-
 
         elseif($user->role == "Mahasiswa"){
             $query->where('Approval_kaprodi','Approved');
@@ -127,7 +127,8 @@ class ProjectController extends Controller
                 $data['lecturer2_id'] = $request->lecturer2_id;
                 $data['Approval_lecturer_1'] = 'Not yet Approved';
                 $data['Approval_lecturer_2'] = 'Not yet Approved';
-                $data['statusp'] = 'process';
+                $data['student_id'] = $user->student->id;
+                $data['status'] = 'process';
                 $data['uploadedBy'] = 'Mahasiswa';
             }
 
@@ -159,7 +160,6 @@ class ProjectController extends Controller
     public function update(Request $request, $id)
     {
         try {
-
             $validated = $request->validate([
                 'title' => 'required',
                 'agency' => 'required',

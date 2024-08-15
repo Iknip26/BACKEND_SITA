@@ -24,6 +24,7 @@ class UserResource extends JsonResource
             'last_login' => $this->last_login,
             'profile_photo' => $this->profile_photo,
             'email' => $this->email,
+            'student' => new StudentResource($this->whenLoaded('student'))
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AnnouncementResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Str;
 
@@ -16,10 +17,18 @@ class AnnouncementController extends Controller
     public function index()
     {
         try {
-            $announcements = Announcement::all();
+            $announcements = Announcement::paginate(5);
             return response()->json([
-                "message" => "data retrieved successfully",
-            "data" => $announcements
+            "message" => "data retrieved successfully",
+            "data" => AnnouncementResource::collection($announcements),
+            'meta' => [
+                'total' => $announcements->total(),
+                'per_page' => $announcements->perPage(),
+                'current_page' => $announcements->currentPage(),
+                'last_page' => $announcements->lastPage(),
+                'next_page' => $announcements->nextPageUrl(),
+                'previous_page' => $announcements->previousPageUrl()
+            ]
         ], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to retrieve announcements'], 500);

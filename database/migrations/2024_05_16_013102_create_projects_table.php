@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId("lecturer1_id")->nullable();
             $table->foreignId("lecturer2_id")->nullable();
+            $table->foreignId("student_id")->nullable();
             $table->string("title");
             $table->string("agency");
             $table->text("description")->nullable();

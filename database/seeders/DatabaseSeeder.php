@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             ProjectSeeder::class,
             AchievementSeeder::class,
             ExperienceSeeder::class,
+            AnnouncementSeeder::class,
         ]);
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("title");
             $table->string("detail");
-            $table->string("attachment");
+            $table->string("attachment")->nullable();
             $table->timestamps();
         });
     }
