@@ -10,7 +10,8 @@ class Counseling extends Model
     use HasFactory;
     protected $fillable = [
         "student_id",
-        "lecturer_id",
+        "lecturer1_id",
+        "lecturer2_id",
         "project_id",
         "date",
         "subject",

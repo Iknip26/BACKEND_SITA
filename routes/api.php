@@ -11,6 +11,7 @@ use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\PdfParserController;
 use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectProgressController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\StudentController;
 use App\Models\ProjectProgress;
@@ -65,7 +66,7 @@ Route::middleware(['auth:sanctum'])->group( function () {
         Route::delete('/lecturer/{lecturer}', [LecturerController::class, 'destroy']);
         Route::post('/lecturer/Approval/{id}',[ProjectController::class,'Approval']);
         Route::post('/lecturer/Approval/Kaprodi/{id}',[ProjectController::class,'ApprovalKaprodi']);
-        Route::apiResource('/projectProgress',ProjectProgress::class);
+        Route::apiResource('/projectProgress',ProjectProgressController::class);
 
     });
 

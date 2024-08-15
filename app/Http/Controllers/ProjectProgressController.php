@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ProjectProgress;
 use Illuminate\Http\Request;
 use App\Http\Resources\ProjectProgressResource;
+use App\Models\Counseling;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -26,13 +27,27 @@ class ProjectProgressController extends Controller
     public function store(Request $request)
     {
         try {
-            $lecturer = Auth::user()->load("lecturer");
-            dd($lecturer);
+            $user = Auth::user();
+            if($user->role != "Dosen"){
+                return response()->json(["message" => "you are not permitted"],401);
+            }
+            $lecturer = $user->load("lecturer");
+            $lecturerId = $lecturer->lecturer->id;
+            // dd($lecturerId);
+
             $validatedData = $request->validate([
-                'counseling_id' => 'required|exists:counseling,id',
+                'counseling_id' => 'required',
                 'lecturer_note' => 'nullable|string',
                 'progress' => 'required|integer|min:0|max:100',
             ]);
+
+            // dd($validatedData);
+
+            $counseling = Counseling::findOrFail($request->counseling_id);
+        // dd($counseling);
+            if($lecturerId != $counseling->lecturer1_id && $lecturerId != $counseling->lecturer2_id){
+                return response()->json(["message" => "you are not permitted"],401);
+            }
 
             $projectProgress = ProjectProgress::create($validatedData);
 

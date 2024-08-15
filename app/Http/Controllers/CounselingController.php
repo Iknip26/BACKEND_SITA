@@ -87,11 +87,11 @@ class CounselingController extends Controller
         try {
             $request->validate([
                 'student_id' => 'required',
-                'lecturer_id' => 'required',
+                'lecturer1_id' => 'required',
+                'lecturer2_id' => 'required',
                 'project_id' => 'required',
                 'date' => 'required|date',
                 'subject' => 'required',
-                'lecturer_note' => 'nullable',
                 'file' => 'nullable|file|mimes:pdf,doc,docx,txt|max:100000',
                 'progress' => 'required',
 
