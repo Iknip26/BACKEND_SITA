@@ -117,6 +117,8 @@ class ProjectController extends Controller
             ]);
 
             $data = $validated;
+            $data['year'] = $activePeriod->year;
+            $data['Approval_kaprodi'] = 'Not yet Approved';
 
             if($user->role == "Mahasiswa"){
                 $request->validate([
@@ -130,6 +132,7 @@ class ProjectController extends Controller
                 $data['student_id'] = $user->student->id;
                 $data['status'] = 'process';
                 $data['uploadedBy'] = 'Mahasiswa';
+
             }
 
             elseif($user->role == 'Dosen'){
@@ -141,11 +144,12 @@ class ProjectController extends Controller
                 // $data['Approval_lecturer_1'] = 'Approved';
             }
 
-            $data['year'] = $activePeriod->year;
-            $data['Approval_kaprodi'] = 'Not yet Approved';
+
             $project = Project::create($data);
 
+
             return response()->json(['message' => "project successfully created",
+
                 'data' => new ProjectResource($project
             )], 201);
 
