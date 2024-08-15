@@ -123,8 +123,8 @@ class ProjectController extends Controller
                     'lecturer1_id' => 'required',
                     'lecturer2_id' => 'required',
                 ]);
-                $data['lecturer1_id'] = $request->Lecturer1_id;
-                $data['lecturer2_id'] = $request->Lecturer2_id;
+                $data['lecturer1_id'] = $request->lecturer1_id;
+                $data['lecturer2_id'] = $request->lecturer2_id;
                 $data['Approval_lecturer_1'] = 'Not yet Approved';
                 $data['Approval_lecturer_2'] = 'Not yet Approved';
                 $data['statusp'] = 'process';
