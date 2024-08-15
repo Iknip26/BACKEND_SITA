@@ -18,7 +18,8 @@ return new class extends Migration
         {
             $table->id();
             $table->foreignId("student_id");
-            $table->foreignId("lecturer_id");
+            $table->foreignId("lecturer1_id");
+            $table->foreignId("lecturer2_id");
             $table->foreignId("project_id");
             $table->date("date")->default(today());
             $table->string("subject");
@@ -28,7 +29,8 @@ return new class extends Migration
             $table->string("progress");
             $table->timestamps();
             $table->foreign("student_id")->references('id')->on('students');
-            $table->foreign("lecturer_id")->references('id')->on('lecturers');
+            $table->foreign("lecturer1_id")->references('id')->on('lecturers');
+            $table->foreign("lecturer2_id")->references('id')->on('lecturers');
             $table->foreign("project_id")->references('id')->on('projects');
         });
     }

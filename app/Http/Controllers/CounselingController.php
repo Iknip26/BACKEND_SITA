@@ -37,9 +37,9 @@ class CounselingController extends Controller
         return response()->json([
             'headers' => $headers, // Adding headers for debugging
             'message' => "data retrieved successfully",
-            'data' => $response->getData(true)['data'], // The actual data
-            'meta' => $response->getData(true)['meta'], // Pagination meta information
-            'links' => $response->getData(true)['links'], // Pagination links
+            'data' => $response->getData(true)['data'],
+            'meta' => $response->getData(true)['meta'],
+            'links' => $response->getData(true)['links']
 
         ], 200);
             // else{
