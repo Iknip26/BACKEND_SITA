@@ -23,7 +23,6 @@ return new class extends Migration
             $table->foreignId("project_id");
             $table->date("date")->default(today());
             $table->string("subject");
-            $table->string("lecturer_note")->nullable();
             $table->string("file")->nullable();
             $table->string("status");
             $table->string("progress");

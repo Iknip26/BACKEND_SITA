@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId("counseling_id");
             $table->string("lecturer_note")->nullable();
-            $table->integer("progress",max(100),min(0));
+            $table->integer("progress");
             $table->timestamps();
 
-            $table->foreign("counseling_id")->references('id')->on('counseling');
+            $table->foreign("counseling_id")->references('id')->on('counselings');
         });
     }
 

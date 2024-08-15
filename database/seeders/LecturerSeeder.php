@@ -21,5 +21,8 @@ class LecturerSeeder extends Seeder
         Lecturer::factory()->create([
             'user_id' => 3,
         ]);
+                foreach (range(4, 13) as $userId) {
+                    Lecturer::factory()->create(['user_id' => $userId]);
+                }
     }
 }
