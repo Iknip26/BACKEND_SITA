@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Lecturer;
 use App\Models\Period;
+use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,12 +20,16 @@ class ProjectFactory extends Factory
     public function definition(): array
     {
         $lecturerIds = Lecturer::pluck('id')->toArray();
+        $lecturerIds[] = null;
         $year = Period::pluck('year')->toArray();
         $role = ['Dosen', 'Mahasiswa'];
+        $student_ids = Student::pluck('id')->toArray();
+        $student_ids[] = null;
 
         return [
             'lecturer1_id' => $this->faker->randomElement($lecturerIds),
             'lecturer2_id' => $this->faker->randomElement($lecturerIds),
+            'student_id' => $this->faker->randomElement($student_ids),
             'title' => $this->faker->sentence,
             'agency' => $this->faker->company,
             'description' => $this->faker->paragraph,

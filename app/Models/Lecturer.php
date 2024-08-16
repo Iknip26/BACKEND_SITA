@@ -14,6 +14,7 @@ class Lecturer extends Model
         'back_title',
         'NID',
         'max_quota',
+        'remaining_quota',
         'phone_number',
         'isKaprodi',
         'photo_profile'
