@@ -19,7 +19,7 @@ class ProjectController extends Controller
         $user = Auth::user();
         // dd($user);
 
-        $query = Project::with('lecturer1.user', 'lecturer2.user');
+        $query = Project::with('lecturer1.user', 'lecturer2.user','student.user');
 
         if ($user->role == "Dosen") {
             $dosen = Lecturer::where('user_id', $user->id)->first();
