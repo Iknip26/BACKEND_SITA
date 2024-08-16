@@ -31,7 +31,7 @@ class ProjectFactory extends Factory
             'tools' => $this->faker->word,
             'instance' => $this->faker->word,
             'year' => $this->faker->randomElement($year),
-            'status' => $this->faker->randomElement(['counseling', 'revision', 'process','not taken yet']),
+            'status' => $this->faker->randomElement(['counseling', 'not approved', 'process','not taken yet']),
             'Approval_lecturer_1' => $this->faker->randomElement(['Approved', 'Not Approved', 'Not yet Approved']),
             'Approval_lecturer_2' => $this->faker->randomElement(['Approved', 'Not Approved', 'Not yet Approved']),
             'Approval_kaprodi' => $this->faker->randomElement(['Approved', 'Not Approved', 'Not yet Approved']),
