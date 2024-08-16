@@ -56,6 +56,7 @@ Route::middleware(['auth:sanctum'])->group( function () {
         Route::apiResource('/achievement',AchievementController::class);
         Route::apiResource('/experience',ExperienceController::class);
         Route::post('student/dospem/{id}',[ProjectController::class,'Dospem2']);
+        Route::get('myProjectStatus/',[ProjectController::class,'getMyProject']);
     });
 
     // api hanya untuh Dosen

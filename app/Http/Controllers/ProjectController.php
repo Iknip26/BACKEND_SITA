@@ -169,7 +169,7 @@ class ProjectController extends Controller
                 'agency' => 'required',
                 'description' => 'required',
                 'tools' => 'required',
-                'status' => 'required|in:counseling,revision,process,not taken yet',
+                'status' => 'required|in:counseling,not approved,process,not taken yet',
                 'instance' => 'required',
             ]);
 
@@ -223,6 +223,10 @@ class ProjectController extends Controller
                 return response()->json(['error' => 'Not permitted'], 403);
             }
 
+            if($project['Approval_lecturer_2']=="Approved" && $project['Approval_lecturer_1']=="Approved"){
+
+            }
+
             return response()->json(['message' => 'Approval updated successfully'], 200);
 
         }catch(\Exception $e){
@@ -243,7 +247,19 @@ class ProjectController extends Controller
                 'Approval' => 'required|in:Approved,Not Approved',
             ]);
 
-            $project->update(['Approval_kaprodi' => $validated['Approval']]);
+            if($request->Approval == "Approved"){
+                $project->update([
+                    'Approval_kaprodi' => $validated['Approval'],
+                    'Status' => "not taken yet"
+            ]);
+        }
+            elseif ($request->Approval == "Not Approved") {
+                $project->update([
+                    'Approval_kaprodi' => $validated['Approval'],
+                    'Status' => "not approved"
+                ]);
+            }
+
             return response()->json(['message' => 'Approval updated successfully'], 200);
 
         } catch (\Exception $e) {
@@ -265,6 +281,34 @@ class ProjectController extends Controller
             return response()->json(['message' => 'dospem updated successfully'], 200);
         }catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()],500);
+        }
+    }
+
+    public function getMyProject(){
+        try {
+            $user= Auth::user()->load('student');
+
+
+        if (!$user->student) {
+            return response()->json(['message' => 'No student profile found for this user.'], 404);
+        }
+            $project = null;
+            $project = Project::where('student_id',$user->student->id)->first();
+
+            if (!$project) {
+                return response()->json(['message' => 'kamu belum mengajukan judul'], 200);
+            }
+            else if($project->status == "not approved"){
+                return response()->json(["message" => "projek mu ditolak"],200);
+            }
+            else if($project->status == "process"){
+                return response()->json(["message" => "proyekmu sedang diproses"],200);
+            }
+            else if($project->status == "counseling"){
+                return response()->json(["message" => "kamu sudah bisa bimbingan"],200);
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
         }
     }
 }

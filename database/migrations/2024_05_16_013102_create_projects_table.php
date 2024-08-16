@@ -23,7 +23,7 @@ return new class extends Migration
             $table->text("description")->nullable();
             $table->string("tools");
             $table->string("instance");
-            $table->enum("status",["counseling","revision","process","not taken yet"]);
+            $table->enum("status",["counseling","not approved","process","not taken yet"])->nullable();
             $table->enum("Approval_lecturer_1",["Approved","Not Approved", "Not yet Approved"])->nullable();
             $table->enum("Approval_lecturer_2",["Approved","Not Approved", "Not yet Approved"])->nullable();
             $table->enum("Approval_kaprodi",["Approved","Not Approved", "Not yet Approved"])->nullable();
