@@ -12,7 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        'api/*', // Jika Anda ingin mengecualikan semua rute API
+        // 'api/*', // Jika Anda ingin mengecualikan semua rute API
         '/login', // Jika hanya ingin mengecualikan rute login
     ];
 }
