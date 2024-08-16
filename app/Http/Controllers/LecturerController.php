@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\LecturerResource;
 use App\Models\Lecturer;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 
@@ -43,7 +44,7 @@ class LecturerController extends Controller
     public function store(Request $request)
     {
         try {
-            $request->validate([
+            $data = $request->validate([
                 'user_id' => 'required',
                 'front_title' => 'required',
                 'back_title' => 'required',
@@ -52,7 +53,9 @@ class LecturerController extends Controller
                 'phone_number' => 'required',
             ]);
 
-            $lecturer = Lecturer::create($request->all());
+            $data['remaining_quota'] = $request->max_quota;
+
+            $lecturer = Lecturer::create($data);
 
             return response()->json([
                 'message' => 'Lecturer created successfully',
@@ -100,6 +103,32 @@ class LecturerController extends Controller
             return response()->json([
                 'message' => 'Lecturer deleted successfully'
             ], 204);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getQuotaLecturer() {
+        try {
+                // Fetch all lecturers
+            $lecturers = Lecturer::all();
+            $usedAllQuota = 0;
+            $allQuota = 0;
+            foreach ($lecturers as $lecturer) {
+                // Count projects where this lecturer is either lecturer1_id or lecturer2_id
+                $usedQuota = Project::where('lecturer1_id', $lecturer->id)
+                                    ->count();
+
+                $usedAllQuota += $usedQuota;
+                $allQuota += $lecturer->max_quota;
+            }
+
+        return response()->json([
+            'message' => 'quotas retrieved successfully.',
+            'used_quota' => $usedAllQuota,
+            'all_quota' => $allQuota,
+        ],200);
+
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

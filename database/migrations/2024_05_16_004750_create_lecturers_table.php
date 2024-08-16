@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string("NID");
             $table->string("photo_profile")->nullable();
             $table->integer("max_quota");
+            $table->integer("remaining_quota");
             $table->string("phone_number");
             $table->boolean("isKaprodi");
             $table->timestamps();

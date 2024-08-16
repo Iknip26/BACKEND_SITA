@@ -78,6 +78,7 @@ Route::middleware(['auth:sanctum'])->group( function () {
         Route::post('/announcement', [AnnouncementController::class, 'store']);
         Route::put('/announcement/{announcement}', [AnnouncementController::class, 'update']);
         Route::delete('/announcement/{announcement}', [AnnouncementController::class, 'destroy']);
+        Route::get('/quota',[LecturerController::class,'getQuotaLecturer']);
     });
 
     Route::post('/logout',[AuthController::class,'logout']);

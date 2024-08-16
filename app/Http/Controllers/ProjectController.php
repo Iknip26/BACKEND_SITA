@@ -218,13 +218,21 @@ class ProjectController extends Controller
                 ]);
 
                 $project->update(['Approval_lecturer_2' => $validated['Approval']]);
+                $dosen->remaining_quota -= 1;
+                $dosen->save;
             }
             else{
                 return response()->json(['error' => 'Not permitted'], 403);
             }
 
-            if($project['Approval_lecturer_2']=="Approved" && $project['Approval_lecturer_1']=="Approved"){
-
+            if($project['Approval_lecturer_2'] == "Not yet Approved" || $project['Approval_lecturer_1']=="Not yet Approved"){
+                $project->update(['status' => 'process']);
+            }
+            elseif($project['Approval_lecturer_1'] == "Not Approved" || $project['Approval_lecturer_2'] == "Not Approved"){
+                $project->update(['status' => 'not approved']);
+            }
+            elseif ($project['Approval_lecturer_1'] == "Approved" && $project['Approval_lecturer_2'] == "Approved") {
+                $project->update(['status' => 'counseling']);
             }
 
             return response()->json(['message' => 'Approval updated successfully'], 200);
@@ -311,4 +319,5 @@ class ProjectController extends Controller
             return response()->json(['error' => $e->getMessage()],500);
         }
     }
+
 }
