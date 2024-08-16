@@ -299,7 +299,7 @@ class ProjectController extends Controller
                 return response()->json(['message' => 'kamu belum mengajukan judul'], 200);
             }
             else if($project->status == "not approved"){
-                return response()->json(["message" => "projek mu ditolak"],200);
+                return response()->json(["message" => "proyekmu ditolak"],200);
             }
             else if($project->status == "process"){
                 return response()->json(["message" => "proyekmu sedang diproses"],200);
@@ -307,8 +307,8 @@ class ProjectController extends Controller
             else if($project->status == "counseling"){
                 return response()->json(["message" => "kamu sudah bisa bimbingan"],200);
             }
-        } catch (\Throwable $th) {
-            //throw $th;
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()],500);
         }
     }
 }
