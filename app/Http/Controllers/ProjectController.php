@@ -17,7 +17,7 @@ class ProjectController extends Controller
 {
     try {
         $user = Auth::user();
-        dd($user);
+        // dd($user);
 
         $query = Project::with('lecturer1.user', 'lecturer2.user');
 
