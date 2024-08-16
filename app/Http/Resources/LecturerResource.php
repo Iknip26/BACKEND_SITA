@@ -20,6 +20,7 @@ class LecturerResource extends JsonResource
             'front_title' => $this->front_title,
             'back_title' => $this->back_title,
             'NID' => $this->NID,
+            'isKaprodi' => $this->isKaprodi,
             'max_quota' => $this->max_quota,
             'phone_number' => $this->phone_number,
         ];
