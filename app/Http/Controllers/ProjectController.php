@@ -23,13 +23,13 @@ class ProjectController extends Controller
 
         if ($user->role == "Dosen") {
             $dosen = Lecturer::where('user_id', $user->id)->first();
-            $query->where(function ($q) use ($dosen) {
-                $q->where('lecturer1_id', $dosen->id)
-                  ->orWhere('lecturer2_id', $dosen->id);
-            });
 
             if($dosen->isKaprodi == false){
                 $query->where('Approval_kaprodi','Approved');
+                $query->where(function ($q) use ($dosen) {
+                    $q->where('lecturer1_id', $dosen->id)
+                      ->orWhere('lecturer2_id', $dosen->id);
+                });
             }
         }
 
