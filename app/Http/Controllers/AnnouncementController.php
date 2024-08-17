@@ -44,7 +44,7 @@ class AnnouncementController extends Controller
             $validatedData = $request->validate([
                 'title' => 'required|string|max:255',
                 'detail' => 'required|string',
-                'attachment' => 'nullable|file|mimes:jpg,png,pdf|max:51200',
+                'attachment' => 'nullable|file|mimes:jpg,png,pdf|max:500000',
             ]);
 
             if ($request->hasFile('attachment')) {
