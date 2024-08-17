@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\CounselingResource;
 use App\Models\Counseling;
 use App\Models\Lecturer;
+use App\Models\Project;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
@@ -27,20 +28,21 @@ class CounselingController extends Controller
             }
             else if($user->role == 'Mahasiswa'){
                 $student = Student::where('user_id',$user->id)->first();
-                $counselings = Counseling::with('student.user')->with('student.user')->with('project')->where('student_id',$student->id)->orderByDesc('id')->paginate();
-
+                $counselings = Counseling::with('project')->orderByDesc('id')->paginate(10);
             }
         // Get the data and meta separately
-        $response = CounselingResource::collection($counselings)->response();
-        $headers = $response->headers->all();
 
         return response()->json([
-            'headers' => $headers, // Adding headers for debugging
-            'message' => "data retrieved successfully",
-            'data' => $response->getData(true)['data'],
-            'meta' => $response->getData(true)['meta'],
-            'links' => $response->getData(true)['links']
-
+            'message' => 'Projects retrieved successfully. There are ' . $counselings->total() . " projects",
+            'data' => CounselingResource::collection($counselings),
+            'meta' => [
+                'total' => $counselings->total(),
+                'per_page' => $counselings->perPage(),
+                'current_page' => $counselings->currentPage(),
+                'last_page' => $counselings->lastPage(),
+                'next_page' => $counselings->appends(request()->query())->nextPageUrl(),
+                'previous_page' => $counselings->appends(request()->query())->previousPageUrl()
+            ]
         ], 200);
             // else{
             //     return response()->json(["Not Authenticate"],400);
@@ -56,19 +58,20 @@ class CounselingController extends Controller
             // dd($id);
             $user = Auth::user();
             if($user->role == "Mahasiswa" ){
-                $Mahasiswa = Student::where("user_id",$user->id)->first();
-                // dd($Mahasiswa);
-                $counseling = Counseling::with('student.user')->with('project')->with('lecturer.user')->findOrFail($id);
-                if($counseling->student_id != $Mahasiswa->id){
+                $Mahasiswa = $user->student;
+                $counseling = Counseling::with('project')->findOrFail($id);
+                // dd($counseling);
+                // dd($Mahasiswa->id."=".$counseling->project->student_id);
+                if($counseling->project->student_id != $Mahasiswa->id){
                     return response()->json([
                         'message' => "unauthorized",
                     ],401);
                 }
             }
             elseif($user->role == "Dosen" ){
-                $Dosen = Lecturer::where("user_id",$user->id)->first();
-                $counseling = Counseling::with('student')->with('project')->with('lecturer')->findOrFail($id);
-                if($counseling->lecturer_id != $Dosen->id){
+                $Dosen = $user->lecturer;
+                $counseling = Counseling::with('project')->findOrFail($id);
+                if($counseling->project->lecturer_id != $Dosen->id){
                     return response()->json([
                         'message' => "unauthorized",
                     ],401);
@@ -85,23 +88,25 @@ class CounselingController extends Controller
     public function store(Request $request)
     {
         try {
-            $request->validate([
-                'student_id' => 'required',
-                'lecturer1_id' => 'required',
-                'lecturer2_id' => 'required',
+            $data = $request->validate([
                 'project_id' => 'required',
-                'date' => 'required|date',
+                'date' => 'nullable|date',
                 'subject' => 'required',
                 'file' => 'nullable|file|mimes:pdf,doc,docx,txt|max:100000',
-                'progress' => 'required',
-
+                'description' => 'nullable',
+                'lecturer_note' => 'nullable'
             ]);
-
-            $data = $request->all();
+            $id = $data['project_id'];
+            $counseling_amount = Counseling::where('project_id',$request->project_id)->count();
+            $project = Project::findOrFail($id)->when('student')->first();
+            // dd();
+            $data['progress']=0;
 
             if ($request->hasFile('file')) {
-                $filePath = $request->file('file')->store('counseling_files', 'public');
+                $fileExtension = $request->file('file')->getClientOriginalExtension();
+                $filePath = "{$project->student->user->first_name}_{$project->student->user->last_name}_{$counseling_amount}.{$fileExtension}";
                 $data['file'] = $filePath;
+
             }
 
             $counseling = Counseling::create($data);
@@ -118,14 +123,13 @@ class CounselingController extends Controller
     {
         try {
             $request->validate([
-                'student_id' => 'required',
-                'lecturer_id' => 'required',
                 'project_id' => 'required',
-                'tanggal' => 'required|date',
-                'subjek' => 'required',
-                'catatan_dosen' => 'nullable',
-                'file' => 'nullable|file|mimes:pdf,doc,docx,txt|max:2048',
-                'progress' => 'required',
+                'date' => 'nullable|date',
+                'subject' => 'required',
+                'file' => 'nullable|file|mimes:pdf,doc,docx,txt|max:100000',
+                'progress' => 'required|integer|max:100,min:0',
+                'description' => 'nullable',
+                'lecturer_note' => 'nullable'
             ]);
 
             $counseling = Counseling::findOrFail($id);

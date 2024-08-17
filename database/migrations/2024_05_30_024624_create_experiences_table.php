@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('company_name');
             $table->string('field');
             $table->string('duration');
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->date('start_date');
             $table->date('end_date');
             $table->timestamps();

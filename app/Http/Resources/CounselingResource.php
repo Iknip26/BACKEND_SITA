@@ -23,8 +23,7 @@ class CounselingResource extends JsonResource
             "file" => $this->file,
             "progress" => $this->progress,
             "status" => $this->status,
-            "mahasiswa" => new StudentResource($this->whenLoaded('student')),
-            "Dosen Pembimbing 1" => new LecturerResource($this->whenLoaded('lecturer')),
+            "project_count" => $this->getCountedProject(),
             "project" => new ProjectResource($this->whenLoaded('project'))
         ];
     }

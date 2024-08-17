@@ -8,10 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Counseling extends Model
 {
     use HasFactory;
+
+    // protected $appends = ['project_count'];
     protected $fillable = [
-        "student_id",
-        "lecturer1_id",
-        "lecturer2_id",
         "project_id",
         "date",
         "subject",
@@ -38,5 +37,11 @@ class Counseling extends Model
 
         return $this->belongsTo(Project::class, 'project_id', 'id');
 
+    }
+
+    public function getCountedProject() {
+        return Counseling::where('project_id', $this->project_id)
+        ->where('id', '<=', $this->id)
+        ->count();
     }
 }
