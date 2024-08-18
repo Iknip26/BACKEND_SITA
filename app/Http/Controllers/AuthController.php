@@ -38,9 +38,6 @@ class AuthController extends Controller
             'password' => $hashedPassword,
         ]);
 
-
-        // dd($request->user());
-
         $emailVerificationController = new EmailVerificationController();
         $emailVerificationController->getVerificationLink($request);
         $emailVerificationController->sendVerificationEmail($request);
@@ -48,6 +45,7 @@ class AuthController extends Controller
         // Response, create token
         return response()->json([
             'message' => 'User berhasil mendaftar',
+            'user_id' => $user->id, // Tambahkan ID pengguna di sini
             'token' => $user->createToken('user_login')->plainTextToken
         ], 201);
     }

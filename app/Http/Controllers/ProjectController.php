@@ -64,9 +64,9 @@ class ProjectController extends Controller
             $query->where('Approval_kaprodi',$request->input('kaprodi'));
         }
 
-        $projects = $query->paginate(6);
+        $projects = $query->paginate(10);
         return response()->json([
-            'message' => 'Projects retrieved successfully. There are ' . $projects->total() . " projects",
+            'message' => 'Projects retrieved successfully. There are ' . $projects->total() . "projects",
             'data' => ProjectResource::collection($projects),
             'meta' => [
                 'total' => $projects->total(),
@@ -88,7 +88,7 @@ class ProjectController extends Controller
     {
         try {
 
-            $project = Project::with('lecturer1.user')->with('lecturer2.user')->findOrFail($id);
+            $project = Project::with('lecturer1.user')->with('lecturer2.user')->with('student.user')->findOrFail($id);
 
             return response()->json(['message' => 'data retrieved successfully','data' => new ProjectResource($project)], 200);
         } catch (\Exception $e) {
