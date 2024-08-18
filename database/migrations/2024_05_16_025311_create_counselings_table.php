@@ -17,19 +17,15 @@ return new class extends Migration
         Schema::create('counselings', function (Blueprint $table)
         {
             $table->id();
-            $table->foreignId("student_id");
-            $table->foreignId("lecturer1_id");
-            $table->foreignId("lecturer2_id");
             $table->foreignId("project_id");
             $table->date("date")->default(today());
             $table->string("subject");
+            $table->text("description")->nullable();
             $table->string("file")->nullable();
-            $table->string("status");
-            $table->string("progress");
+            $table->enum("status",['revision','ok'])->nullable();
+            $table->integer("progress");
+            $table->string("lecturer_note")->nullable();
             $table->timestamps();
-            $table->foreign("student_id")->references('id')->on('students');
-            $table->foreign("lecturer1_id")->references('id')->on('lecturers');
-            $table->foreign("lecturer2_id")->references('id')->on('lecturers');
             $table->foreign("project_id")->references('id')->on('projects');
         });
     }
