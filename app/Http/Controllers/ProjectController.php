@@ -296,12 +296,13 @@ class ProjectController extends Controller
         try {
             $user= Auth::user()->load('student');
 
-
+            // dd($user);
         if (!$user->student) {
             return response()->json(['message' => 'No student profile found for this user.'], 404);
         }
             $project = null;
             $project = Project::where('student_id',$user->student->id)->first();
+            // dd($project);
 
             if (!$project) {
                 return response()->json(['message' => 'kamu belum mengajukan judul'], 200);

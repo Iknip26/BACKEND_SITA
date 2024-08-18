@@ -72,7 +72,7 @@ Route::middleware(['auth:sanctum'])->group( function () {
     });
 
     // api hanya kaprodi tapi kaprodi bisa melihat yang ada di dosen
-    Route::middleware(['role:'])->group(function(){
+    Route::middleware(['role:kaprodi'])->group(function(){
         Route::get('/lecturer',[LecturerController::class,'index']);
         Route::get('/student',[StudentController::class,'index']);
         Route::post('/announcement', [AnnouncementController::class, 'store']);
