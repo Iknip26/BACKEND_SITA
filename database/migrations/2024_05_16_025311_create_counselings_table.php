@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string("file")->nullable();
             $table->enum("status",['revision','ok'])->nullable();
             $table->integer("progress");
-            $table->string("lecturer_note")->nullable();
+            $table->text("lecturer_note")->nullable();
             $table->timestamps();
             $table->foreign("project_id")->references('id')->on('projects');
         });
