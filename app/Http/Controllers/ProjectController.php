@@ -53,7 +53,7 @@ class ProjectController extends Controller
         }
 
         if ($request->has('Approval')) {
-            $query->where('Approval', $request->input('Approval'));
+            $query->where('Approval_lecturer_1', $request->input('Approval'));
         }
 
         if ($request->has('tools')) {

@@ -112,6 +112,7 @@ class LecturerController extends Controller
         try {
                 // Fetch all lecturers
             $lecturers = Lecturer::all();
+            // dd($lecturers);
             $usedAllQuota = 0;
             $allQuota = 0;
             foreach ($lecturers as $lecturer) {
